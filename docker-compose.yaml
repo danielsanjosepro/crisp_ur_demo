@@ -1,0 +1,74 @@
+x-base: &base
+  image: crisp_ur_demo:base
+  build:
+    context: .
+    dockerfile: docker/Dockerfile.ur
+    args:
+      ROS_DISTRO: humble
+    target: base
+
+  network_mode: host
+  ipc: host
+  pid: host
+  privileged: true
+
+  command: /bin/bash
+  tty: true
+  stdin_open: true
+
+  volumes:
+    - $HOME/.Xauthority:/root/.Xauthority
+    - /tmp/.X11-unix:/tmp/.X11-unix:rw
+    - /dev:/dev
+  device_cgroup_rules:
+    - 'c 81:* rmw'
+    - 'c 189:* rmw'
+  devices:
+    - "/dev/input:/dev/input"
+  cap_add:
+    - SYS_NICE
+  environment:
+    QT_X11_NO_MITSHM: 1
+    DISPLAY: ${DISPLAY}
+    ROS_DOMAIN_ID: 100
+    RCUTILS_COLORIZED_OUTPUT: 1
+    SHELL: /bin/bash
+    RMW: fastdds
+    FASTDDS_BUILTIN_TRANSPORTS: UDPv4
+
+  ulimits:
+    rtprio: 99
+    rttime: -1
+    memlock: 8428281856
+
+x-ur-overlay: &ur-overlay
+  <<: *base
+  image: crisp_ur_demo:ur-overlay
+  build:
+    context: .
+    dockerfile: docker/Dockerfile.ur
+    target: ur-overlay
+
+services:
+  devcontainer:
+    <<: *ur-overlay
+
+  launch_ur:
+    <<: *ur-overlay
+    command: >
+      bash -lc "source /opt/ros/humble/setup.bash &&
+      source install/setup.bash &&
+      export ROS_NETWORK_INTERFACE=${ROS_NETWORK_INTERFACE:-lo} &&
+      RMW=${RMW:-} source src/crisp_ur_demo/scripts/setup_middleware.sh &&
+      ros2 launch crisp_ur_demos ur.launch.py
+      ur_type:=${UR_TYPE:-ur5e} use_fake_hardware:=${UR_FAKE_HARDWARE:-false} robot_ip:=${ROBOT_IP:-192.168.56.101} use_rviz:=True"
+
+  launch_zenoh_router:
+    <<: *base
+    command: >
+      bash -lc "source /opt/ros/humble/setup.bash &&
+      export RMW_IMPLEMENTATION=rmw_zenoh_cpp &&
+      export RUST_LOG=zenoh=info &&
+      ros2 doctor -r | grep rmw_zenoh_cpp &&
+      ros2 daemon stop && ros2 daemon start &&
+      ros2 run rmw_zenoh_cpp rmw_zenohd"
