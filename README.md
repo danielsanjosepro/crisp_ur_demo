@@ -1,3 +1,11 @@
+> [!NOTE]
+> ```bash
+> git clone https://github.com/danielsanjosepro/crisp_ur_demo.git
+> cd crisp_ur_demo
+> docker compose build
+> docker compose up launch_ur
+> ```
+
 # crisp_ur_demo
 
 Demo on how to use Universal Robots (UR) with CRISP Controllers using Docker containers.
