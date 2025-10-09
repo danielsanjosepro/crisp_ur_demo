@@ -30,18 +30,23 @@ git clone https://github.com/danielsanjosepro/crisp_ur_demo.git
 cd crisp_ur_demo
 ```
 
-2. Copy and configure the environment file:
+2. Validate your setup (optional but recommended):
+```bash
+./scripts/validate_setup.sh
+```
+
+3. Copy and configure the environment file:
 ```bash
 cp .env.example .env
 # Edit .env to set your robot IP and type
 ```
 
-3. Build the Docker container:
+4. Build the Docker container:
 ```bash
 docker compose build
 ```
 
-4. Run the demo:
+5. Run the demo:
 ```bash
 # For fake hardware (simulation)
 docker compose run --rm launch_ur
@@ -99,7 +104,8 @@ crisp_ur_demo/
 ├── scripts/
 │   ├── setup_middleware.sh     # Middleware configuration script
 │   ├── set_cyclone_config.sh   # CycloneDDS setup
-│   └── set_zenoh_config.sh     # Zenoh setup
+│   ├── set_zenoh_config.sh     # Zenoh setup
+│   └── validate_setup.sh       # Setup validation script
 ├── config/
 │   └── cyclonedds.xml          # CycloneDDS configuration
 ├── crisp_ur_demos/             # ROS 2 package
