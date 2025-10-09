@@ -1,4 +1,4 @@
-ARG ROS_DISTRO=humble
+ARG ROS_DISTRO=rolling
 ARG CRISP_CONTROLLERS_VERSION=1.1.0
 
 FROM osrf/ros:${ROS_DISTRO}-desktop AS base
@@ -44,7 +44,6 @@ RUN apt-get update && \
     unzip \
     pip \
     python3-venv \
-    python3-ament-package \
     python3-flake8 \
     python3-rosdep \
     python3-setuptools \
@@ -73,10 +72,10 @@ FROM base AS ur
 # === UR ROS2 with effort interface ===
 # Clone the UR driver with effort interface support
 RUN git clone --branch effort_interface https://github.com/urfeex/Universal_Robots_ROS2_Driver.git src/Universal_Robots_ROS2_Driver \
-    && source /opt/ros/humble/setup.bash \
+    && source /opt/ros/${ROS_DISTRO}/setup.bash \
     && sudo apt-get update \
     && cd src/Universal_Robots_ROS2_Driver \
-    && vcs import .. < Universal_Robots_ROS2_Driver.jazzy.repos --recursive --skip-existing || true \
+    && vcs import .. < Universal_Robots_ROS2_Driver.${ROS_DISTRO}.repos --recursive --skip-existing || true \
     && cd /home/ros/ros2_ws \
     && rosdep update \
     && rosdep install --from-paths src --ignore-src --rosdistro $ROS_DISTRO -y \
@@ -89,7 +88,7 @@ ARG CRISP_CONTROLLERS_VERSION=1.1.0
 
 COPY . src/crisp_ur_demo
 
-RUN git clone --branch v${CRISP_CONTROLLERS_VERSION} --depth 1 https://github.com/utiasDSL/crisp_controllers.git src/crisp_controllers
+RUN git clone --branch $ROS_DISTRO --depth 1 https://github.com/utiasDSL/crisp_controllers.git src/crisp_controllers
 
 RUN source /opt/ros/$ROS_DISTRO/setup.bash \
     && source /home/ros/ros2_ws/install/setup.bash \

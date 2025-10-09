@@ -4,7 +4,7 @@ x-base: &base
     context: .
     dockerfile: docker/Dockerfile.ur
     args:
-      ROS_DISTRO: humble
+      ROS_DISTRO: rolling
     target: base
 
   network_mode: host
