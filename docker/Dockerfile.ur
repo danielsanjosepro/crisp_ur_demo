@@ -71,16 +71,17 @@ WORKDIR /home/ros/ros2_ws
 FROM base AS ur
 
 # === UR ROS2 with effort interface ===
+# Clone the UR driver with effort interface support
 RUN git clone --branch effort_interface https://github.com/urfeex/Universal_Robots_ROS2_Driver.git src/Universal_Robots_ROS2_Driver \
-    && cd src/Universal_Robots_ROS2_Driver \
     && source /opt/ros/humble/setup.bash \
     && sudo apt-get update \
-    && vcs import src < Universal_Robots_ROS2_Driver.jazzy.repos --recursive --skip-existing || true \
+    && cd src/Universal_Robots_ROS2_Driver \
+    && vcs import .. < Universal_Robots_ROS2_Driver.jazzy.repos --recursive --skip-existing || true \
     && cd /home/ros/ros2_ws \
     && rosdep update \
     && rosdep install --from-paths src --ignore-src --rosdistro $ROS_DISTRO -y \
     && colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release \
-    && touch src/Universal_Robots_ROS2_Driver/COLCON_IGNORE
+    && find src/Universal_Robots_ROS2_Driver -mindepth 1 -maxdepth 1 -type d -exec touch {}/COLCON_IGNORE \;
 
 FROM ur AS ur-overlay
 
