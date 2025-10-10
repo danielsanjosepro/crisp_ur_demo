@@ -20,6 +20,8 @@ x-base: &base
     - $HOME/.Xauthority:/root/.Xauthority
     - /tmp/.X11-unix:/tmp/.X11-unix:rw
     - /dev:/dev
+    - /usr/bin/docker:/usr/bin/docker
+    - /var/run/docker.sock:/var/run/docker.sock
   device_cgroup_rules:
     - 'c 81:* rmw'
     - 'c 189:* rmw'
@@ -56,17 +58,27 @@ services:
   launch_ur:
     <<: *ur-overlay
     command: >
-      bash -lc "source /opt/ros/humble/setup.bash &&
+      bash -lc "source /opt/ros/rolling/setup.bash &&
       source install/setup.bash &&
       export ROS_NETWORK_INTERFACE=${ROS_NETWORK_INTERFACE:-lo} &&
       RMW=${RMW:-} source src/crisp_ur_demo/scripts/setup_middleware.sh &&
-      ros2 launch crisp_ur_demos ur.launch.py
-      ur_type:=${UR_TYPE:-ur5e} use_fake_hardware:=${UR_FAKE_HARDWARE:-false} robot_ip:=${ROBOT_IP:-192.168.56.101} use_rviz:=True"
+      ros2 launch crisp_ur_demos ur.launch.py 
+      ur_type:=${UR_TYPE:-ur30} robot_ip:=${ROBOT_IP:-192.168.56.101} use_rviz:=True"
+  
+  launch_ursim:  
+    <<: *ur-overlay
+    user: root
+    command: >
+      bash -lc "source /opt/ros/rolling/setup.bash &&
+      source install/setup.bash &&
+      export ROS_NETWORK_INTERFACE=${ROS_NETWORK_INTERFACE:-lo} &&
+      RMW=${RMW:-} source src/crisp_ur_demo/scripts/setup_middleware.sh &&
+      ros2 run ur_client_library start_ursim.sh -v 10.8.0 -m ur30"
 
   launch_zenoh_router:
     <<: *base
     command: >
-      bash -lc "source /opt/ros/humble/setup.bash &&
+      bash -lc "source /opt/ros/rolling/setup.bash &&
       export RMW_IMPLEMENTATION=rmw_zenoh_cpp &&
       export RUST_LOG=zenoh=info &&
       ros2 doctor -r | grep rmw_zenoh_cpp &&

@@ -54,17 +54,21 @@ cp .env.example .env
 docker compose build
 ```
 
-5. Run the demo:
+5. Launch the URSim simulation:
 ```bash
-# For fake hardware (simulation)
-docker compose run --rm launch_ur
+docker compose run --rm launch_ursim
+```
 
-# For real hardware, first set the environment variables in .env:
-# UR_FAKE_HARDWARE=false
-# ROBOT_IP=<your_robot_ip>
-# UR_TYPE=<your_robot_type>
+6. Open the URSim PolyscopeX GUI:
+
+In your web browser, go to [http://192.168.56.101](http://192.168.56.101). You should see the URSim interface. Use Polyscope to move the robot.
+
+7. Launch the demo (RViz visualization):
+```bash
 docker compose run --rm launch_ur
 ```
+
+When you move the robot in Polyscope, the robot’s RViz visualization should move accordingly.
 
 ## Configuration
 
@@ -137,6 +141,18 @@ To get an interactive shell inside the container:
 ```bash
 docker compose run --rm devcontainer
 ```
+
+### Simulated Robot Workflow (URSim)
+
+1. Start the URSim simulation:
+   ```bash
+   docker compose run --rm launch_ursim
+   ```
+2. Open [http://192.168.56.101](http://192.168.56.101) in your browser to access PolyscopeX.
+3. Move the robot in Polyscope. The RViz visualization will update accordingly when you launch:
+   ```bash
+   docker compose run --rm launch_ur
+   ```
 
 ### Starting Controllers
 
