@@ -71,7 +71,7 @@ FROM base AS ur
 
 # === UR ROS2 with effort interface ===
 # Clone the UR driver with effort interface support
-RUN git clone --branch effort_interface https://github.com/urfeex/Universal_Robots_ROS2_Driver.git src/Universal_Robots_ROS2_Driver \
+RUN git clone https://github.com/UniversalRobots/Universal_Robots_ROS2_Driver.git src/Universal_Robots_ROS2_Driver \
     && source /opt/ros/${ROS_DISTRO}/setup.bash \
     && sudo apt-get update \
     && cd src/Universal_Robots_ROS2_Driver \

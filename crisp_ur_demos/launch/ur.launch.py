@@ -42,7 +42,7 @@ def generate_launch_description():
 
     use_fake_hardware_arg = DeclareLaunchArgument(
         "use_fake_hardware",
-        default_value="true",
+        default_value="false",
         description="Use fake hardware (URSim).",
     )
 
@@ -86,19 +86,19 @@ def generate_launch_description():
     # ----------------------------
     # Base controllers required for URSim
     # ----------------------------
-    joint_state_broadcaster = Node(
-        package="controller_manager",
-        executable="spawner",
-        arguments=["joint_state_broadcaster"],
-        output="screen",
-    )
+    # joint_state_broadcaster = Node(
+    #     package="controller_manager",
+    #     executable="spawner",
+    #     arguments=["joint_state_broadcaster"],
+    #     output="screen",
+    # )
 
-    tcp_pose_broadcaster = Node(
-        package="controller_manager",
-        executable="spawner",
-        arguments=["tcp_pose_broadcaster"],
-        output="screen",
-    )
+    # tcp_pose_broadcaster = Node(
+    #     package="controller_manager",
+    #     executable="spawner",
+    #     arguments=["tcp_pose_broadcaster"],
+    #     output="screen",
+    # )
 
     # ----------------------------
     # Custom controllers
@@ -134,32 +134,33 @@ def generate_launch_description():
     # ----------------------------
     # URSim connection nodes
     # ----------------------------
-    urscript_interface = Node(
-        package="ur_robot_driver",
-        executable="urscript_interface",
-        parameters=[{"robot_ip": robot_ip}],
-        output="screen",
-        condition=UnlessCondition(use_fake_hardware),
-    )
+    # urscript_interface = Node(
+    #     package="ur_robot_driver",
+    #     executable="urscript_interface",
+    #     parameters=[{"robot_ip": robot_ip}],
+    #     output="screen",
+    #     condition=UnlessCondition(use_fake_hardware),
+    # )
 
-    robot_state_helper_node = Node(
-        package="ur_robot_driver",
-        executable="robot_state_helper",
-        name="ur_robot_state_helper",
-        output="screen",
-        parameters=[{"robot_ip": robot_ip}],
-    )
+    # robot_state_helper_node = Node(
+    #     package="ur_robot_driver",
+    #     executable="robot_state_helper",
+    #     name="ur_robot_state_helper",
+    #     output="screen",
+    #     parameters=[{"robot_ip": robot_ip}],
+    # )
 
-    trajectory_until_node = Node(
-        package="ur_robot_driver",
-        executable="trajectory_until_node",
-        name="trajectory_until_node",
-        output="screen",
-    )
+    # trajectory_until_node = Node(
+    #     package="ur_robot_driver",
+    #     executable="trajectory_until_node",
+    #     name="trajectory_until_node",
+    #     output="screen",
+    # )
 
     # ----------------------------
     # LaunchDescription
     # ----------------------------
+    # Only include the UR driver launch. Do not spawn controllers already managed by ur_control.launch.py.
     return LaunchDescription(
         [
             ur_type_arg,
@@ -167,14 +168,10 @@ def generate_launch_description():
             use_fake_hardware_arg,
             use_rviz_arg,
             ur_control,
-            joint_state_broadcaster,
-            tcp_pose_broadcaster,
+            # Uncomment the following lines ONLY if these controllers are NOT managed by ur_control.launch.py
             cartesian_impedance_controller,
             joint_impedance_controller,
             gravity_compensation,
             pose_broadcaster,
-            urscript_interface,
-            robot_state_helper_node,
-            trajectory_until_node,
         ]
     )
