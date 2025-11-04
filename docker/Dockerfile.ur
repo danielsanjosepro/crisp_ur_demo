@@ -4,6 +4,7 @@ ARG CRISP_CONTROLLERS_VERSION=1.1.0
 FROM osrf/ros:${ROS_DISTRO}-desktop AS base
 
 ENV ROS_DISTRO=${ROS_DISTRO}
+ARG MUJOCO_VERSION=3.2.6
 
 # Create a non-root user
 ARG USERNAME=ros
@@ -65,6 +66,17 @@ USER $USERNAME
 
 RUN mkdir -p /home/ros/ros2_ws
 
+# === INSTALL MUJOCO ===
+
+WORKDIR /home/ros
+
+ENV MUJOCO_VERSION=${MUJOCO_VERSION}
+
+RUN sudo apt update && sudo apt-get install -y libglfw3-dev wget \ 
+    && wget https://github.com/google-deepmind/mujoco/releases/download/$MUJOCO_VERSION/mujoco-$MUJOCO_VERSION-linux-x86_64.tar.gz \
+    && tar -xzf mujoco-${MUJOCO_VERSION}-linux-x86_64.tar.gz -C "/home/ros"
+
+
 WORKDIR /home/ros/ros2_ws
 
 FROM base AS ur
@@ -90,10 +102,12 @@ COPY . src/crisp_ur_demo
 
 RUN git clone --branch $ROS_DISTRO --depth 1 https://github.com/utiasDSL/crisp_controllers.git src/crisp_controllers
 
+
+
 RUN source /opt/ros/$ROS_DISTRO/setup.bash \
     && source /home/ros/ros2_ws/install/setup.bash \
     && sudo apt update \
     && rosdep update \
     && rosdep install -q --from-paths src --ignore-src -y \
     && colcon build --symlink-install \
-        --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON --packages-select crisp_controllers crisp_ur_demos
+        --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON --packages-select crisp_mujoco_sim crisp_controllers crisp_ur_demos 

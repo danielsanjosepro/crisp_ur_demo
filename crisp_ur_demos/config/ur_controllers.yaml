@@ -28,6 +28,9 @@
       ur_configuration_controller:
         type: ur_controllers/URConfigurationController
       
+      joint_trajectory_admittance_controller:
+        type: moveit_pro_controllers/JointTrajectoryAdmittanceController
+      
       forward_position_controller:
         type: position_controllers/JointGroupPositionController
 
@@ -90,6 +93,27 @@ freedrive_mode_controller:
 tool_contact_controller:
   ros__parameters:
     tf_prefix: ""
+
+joint_trajectory_admittance_controller:
+  ros__parameters:
+    joints:
+      - shoulder_pan_joint
+      - shoulder_lift_joint
+      - elbow_joint
+      - wrist_1_joint
+      - wrist_2_joint
+      - wrist_3_joint
+    base_frame: base_link    
+    sensor_frame: tool0
+    ee_frame: grasp_link
+    ft_sensor_name: tcp_fts_sensor
+    stop_accelerations:
+        - 100.0  
+        - 100.0  
+        - 100.0  
+        - 100.0  
+        - 100.0  
+        - 100.0  
 
 force_torque_sensor_broadcaster:
   ros__parameters:

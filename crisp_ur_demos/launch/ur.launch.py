@@ -19,7 +19,7 @@ def generate_launch_description():
     # ----------------------------
     ur_type_arg = DeclareLaunchArgument(
         "ur_type",
-        default_value="ur5e",
+        default_value="ur10e",
         description="Type/series of used UR robot.",
         choices=[
             "ur3",
@@ -130,6 +130,13 @@ def generate_launch_description():
         arguments=["pose_broadcaster"],
         output="screen",
     )
+
+    Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["joint_trajectory_admittance_controller", "--inactive"],
+        output="screen",
+    ),
 
     # ----------------------------
     # URSim connection nodes
