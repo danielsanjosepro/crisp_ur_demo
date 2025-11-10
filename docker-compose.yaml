@@ -63,7 +63,7 @@ services:
       export ROS_NETWORK_INTERFACE=${ROS_NETWORK_INTERFACE:-lo} &&
       RMW=${RMW:-} source src/crisp_ur_demo/scripts/setup_middleware.sh &&
       ros2 launch crisp_ur_demos ur.launch.py 
-      ur_type:=ur30 robot_ip:=${ROBOT_IP:-192.168.56.101} use_rviz:=True"
+      ur_type:=ur5e robot_ip:=${ROBOT_IP:-192.168.1.1} use_rviz:=True"
   
   launch_ursim:  
     <<: *ur-overlay
@@ -73,8 +73,7 @@ services:
       source install/setup.bash &&
       export ROS_NETWORK_INTERFACE=${ROS_NETWORK_INTERFACE:-lo} &&
       RMW=${RMW:-} source src/crisp_ur_demo/scripts/setup_middleware.sh &&
-      ros2 run ur_client_library start_ursim.sh -v 5.24.0 -m ur30"
-
+      ros2 run ur_client_library start_ursim.sh -v 10.11.0 -m ur30"
   launch_zenoh_router:
     <<: *base
     command: >
