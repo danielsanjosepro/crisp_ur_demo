@@ -56,6 +56,7 @@ RUN apt-get update && \
     ros-$ROS_DISTRO-ros2-control \
     ros-$ROS_DISTRO-ros2-controllers \
     ros-$ROS_DISTRO-rmw-cyclonedds-cpp \
+    ros-$ROS_DISTRO-ament-index-cpp \
     ros-$ROS_DISTRO-rmw-zenoh-cpp \
     dpkg
 
@@ -87,7 +88,14 @@ RUN git clone https://github.com/UniversalRobots/Universal_Robots_ROS2_Driver.gi
     && source /opt/ros/${ROS_DISTRO}/setup.bash \
     && sudo apt-get update \
     && cd src/Universal_Robots_ROS2_Driver \
-    && vcs import .. < Universal_Robots_ROS2_Driver.${ROS_DISTRO}.repos --recursive --skip-existing || true \
+    && vcs import .. < Universal_Robots_ROS2_Driver.${ROS_DISTRO}.repos --recursive --skip-existing || true
+
+# Copy your modified ros2_control xacro
+COPY --chown=ros:ros config/ur.ros2_control.xacro \
+     /home/ros/ros2_ws/src/Universal_Robots_ROS2_Driver/ur_robot_driver/urdf/ur.ros2_control.xacro
+
+# Resolve deps and build
+RUN source /opt/ros/${ROS_DISTRO}/setup.bash \
     && cd /home/ros/ros2_ws \
     && rosdep update \
     && rosdep install --from-paths src --ignore-src --rosdistro $ROS_DISTRO -y \
@@ -98,10 +106,13 @@ FROM ur AS ur-overlay
 
 ARG CRISP_CONTROLLERS_VERSION=1.1.0
 
+# Clone topic_based_ros2_control from source
+RUN git clone --branch main https://github.com/ros-controls/topic_based_hardware_interfaces.git src/topic_based_hardware_interfaces
+
+
 COPY . src/crisp_ur_demo
 
 RUN git clone --branch $ROS_DISTRO --depth 1 https://github.com/utiasDSL/crisp_controllers.git src/crisp_controllers
-
 
 
 RUN source /opt/ros/$ROS_DISTRO/setup.bash \
@@ -109,5 +120,5 @@ RUN source /opt/ros/$ROS_DISTRO/setup.bash \
     && sudo apt update \
     && rosdep update \
     && rosdep install -q --from-paths src --ignore-src -y \
-    && colcon build --symlink-install \
-        --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON --packages-select crisp_mujoco_sim crisp_controllers crisp_ur_demos 
+    && colcon build --symlink-install \ 
+        --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON --packages-select crisp_mujoco_sim crisp_controllers crisp_ur_demos crisp_mujoco_sim

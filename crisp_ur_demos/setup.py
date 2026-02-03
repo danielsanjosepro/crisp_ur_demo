@@ -15,7 +15,7 @@ setup(
         (os.path.join("share", package_name, "config"), glob("config/*.yaml")),
         (os.path.join("share", package_name, "config"), glob("config/*.xacro")),
         (os.path.join("share", package_name, "config"), glob("config/*.xml")),
-        (os.path.join("share", package_name, "config"), glob("config/assets/*.obj")),
+        (os.path.join("share", package_name, "config/assets"), glob("config/assets/*")),
     ],
     install_requires=["setuptools"],
     zip_safe=True,
