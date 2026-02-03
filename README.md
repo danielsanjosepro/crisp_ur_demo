@@ -12,9 +12,19 @@ Demo on how to use Universal Robots (UR) with CRISP Controllers using Docker con
 
 This repository provides a Docker-based setup to test [CRISP controllers](https://github.com/utiasDSL/crisp_controllers) with Universal Robots using the [UR ROS2 Driver](https://github.com/UniversalRobots/Universal_Robots_ROS2_Driver) with effort interface support.
 
+The demo supports **two execution modes**:
+- **Real robot mode** (physical UR robot)
+- **Simulation mode using MuJoCo**
+
+⚠️ At the moment, it is **not possible to use the official Universal Robots simulator (URSim / Polyscope)**.
+
+---
+
 ## Overview
 
 This demo is based on the structure of [crisp_controllers_demos](https://github.com/utiasDSL/crisp_controllers_demos) but adapted specifically for Universal Robots. It uses a fork of the UR ROS2 driver ([urfeex/Universal_Robots_ROS2_Driver](https://github.com/urfeex/Universal_Robots_ROS2_Driver/tree/effort_interface)) that implements the effort interface required for CRISP controllers.
+
+For simulation, the robot is modeled and executed in **MuJoCo**, which provides joint-level dynamics and effort control compatible with CRISP controllers.
 
 ## Features
 
@@ -53,22 +63,48 @@ cp .env.example .env
 ```bash
 docker compose build
 ```
+---
 
-5. Launch the URSim simulation:
-```bash
-docker compose run --rm launch_ursim
-```
+## Running the Demo
 
-6. Open the URSim PolyscopeX GUI:
+There are **two different ways to run the system**, depending on whether you want to use a real robot or a simulated one.
 
-In your web browser, go to [http://192.168.56.101](http://192.168.56.101). You should see the URSim interface. Use Polyscope to move the robot.
+---
 
-7. Launch the demo (RViz visualization):
+### 1. Real Robot Mode
+
+Run:
 ```bash
 docker compose run --rm launch_ur
 ```
 
-When you move the robot in Polyscope, the robot’s RViz visualization should move accordingly.
+---
+
+### 2. Simulation Mode (MuJoCo)
+
+Run:
+```bash
+docker compose run --rm launch_ur_mujoco
+```
+
+> ⚠️ Tested only with `ur5e`.  
+> ❌ URSim / Polyscope is not supported.
+
+
+### Starting Controllers
+
+Once the robot is running, you can switch between controllers using ros2 control:
+
+```bash
+# List available controllers
+ros2 control list_controllers
+
+# Load and start cartesian impedance controller
+ros2 control set_controller_state cartesian_impedance_controller start
+
+# Switch to joint impedance controller
+ros2 control switch_controllers --deactivate cartesian_impedance_controller --activate joint_impedance_controller
+```
 
 ## Configuration
 
@@ -132,42 +168,9 @@ crisp_ur_demo/
 └── README.md                   # This file
 ```
 
-## Usage
 
-### Interactive Shell
 
-To get an interactive shell inside the container:
 
-```bash
-docker compose run --rm devcontainer
-```
-
-### Simulated Robot Workflow (URSim)
-
-1. Start the URSim simulation:
-   ```bash
-   docker compose run --rm launch_ursim
-   ```
-2. Open [http://192.168.56.101](http://192.168.56.101) in your browser to access PolyscopeX.
-3. Move the robot in Polyscope. The RViz visualization will update accordingly when you launch:
-   ```bash
-   docker compose run --rm launch_ur
-   ```
-
-### Starting Controllers
-
-Once the robot is running, you can switch between controllers using ros2 control:
-
-```bash
-# List available controllers
-ros2 control list_controllers
-
-# Load and start cartesian impedance controller
-ros2 control set_controller_state cartesian_impedance_controller start
-
-# Switch to joint impedance controller
-ros2 control switch_controllers --deactivate cartesian_impedance_controller --activate joint_impedance_controller
-```
 
 ## Troubleshooting
 
