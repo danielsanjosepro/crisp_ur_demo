@@ -53,7 +53,7 @@
 
         <hardware>
           <plugin>crisp_mujoco_sim/Simulator</plugin>
-          <param name="mujoco_model">$(find crisp_ur_demos)/config/scene.xml</param>
+          <param name="mujoco_model">$(find crisp_ur_demos)/config/mujoco/scene.xml</param>
         </hardware>
 
         <!-- IMPORTANT:

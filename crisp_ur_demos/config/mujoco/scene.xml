@@ -1,5 +1,5 @@
 <mujoco model="ur scene">
-  <include file="ur5e.xml"/>
+  <include file="ur30/ur30.xml"/>
   <!-- Remove gravity and add a ground plane. -->
   <option gravity="0 0 0"/>
 

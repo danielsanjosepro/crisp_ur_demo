@@ -92,4 +92,4 @@ services:
       export ROS_NETWORK_INTERFACE=${ROS_NETWORK_INTERFACE:-lo} &&
       RMW=${RMW:-} source src/crisp_ur_demo/scripts/setup_middleware.sh &&
       ros2 launch crisp_ur_demos ur.launch.py \
-      ur_type:=ur5e robot_ip:=${ROBOT_IP:-192.168.56.101} use_fake_hardware:=true use_rviz:=True"
+      ur_type:=ur30 robot_ip:=${ROBOT_IP:-192.168.56.101} use_fake_hardware:=true use_rviz:=True"

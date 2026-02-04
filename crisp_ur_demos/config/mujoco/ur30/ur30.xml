@@ -1,0 +1,141 @@
+<mujoco model="ur30">
+  <compiler angle="radian" meshdir="meshes" autolimits="true"/>
+
+  <!-- Match your UR5e style -->
+  <option integrator="implicitfast"/>
+
+  <default>
+    <default class="ur30">
+      <!-- Franka-like defaults (same idea as your UR5e) -->
+      <joint armature="0.1" damping="1.0" frictionloss="0.1"/>
+
+      <!-- Visual-only meshes by default -->
+      <default class="visual">
+        <geom type="mesh" contype="0" conaffinity="0" group="2"/>
+      </default>
+
+      <!-- If you later add simplified collisions, put them in here -->
+      <default class="collision">
+        <geom group="3"/>
+      </default>
+
+      <site size="0.001" rgba="0.5 0.5 0.5 0.3" group="4"/>
+    </default>
+  </default>
+
+  <asset>
+    <mesh name="base"      file="meshes/collision/base.stl"/>
+    <mesh name="shoulder"  file="meshes/collision/shoulder.stl"/>
+    <mesh name="upperarm"  file="meshes/collision/upperarm.stl"/>
+    <mesh name="forearm"   file="meshes/collision/forearm.stl"/>
+    <mesh name="wrist1"    file="meshes/collision/wrist1.stl"/>
+    <mesh name="wrist2"    file="meshes/collision/wrist2.stl"/>
+    <mesh name="wrist3"    file="meshes/collision/wrist3.stl"/>
+
+    <material name="visualgeom" rgba="0.5 0.9 0.2 1"/>
+  </asset>
+
+  <worldbody>
+    <!-- Keep it simple like UR5e: no free-floating root -->
+    <light name="spotlight" mode="targetbodycom" target="wrist_2_link" pos="0 -1 2"/>
+
+    <!-- Fixed base body (no <freejoint>) -->
+    <body name="base" pos="0 0 0.19087205661119003" quat="1 0 0 0" childclass="ur30">
+      <site name="imu" size="0.01" pos="0 0 0"/>
+
+      <!-- Visual meshes only -->
+      <geom type="mesh" mesh="base" quat="-1 0 0 0" material="visualgeom" class="visual"/>
+
+      <body name="shoulder_link" pos="0 0 0.2363" quat="0 0 0 1">
+        <inertial pos="-0.0001 -0.0069 -0.06"
+                 quat="0.705507 0.0945828 -0.0925597 0.696238"
+                 mass="16.343" diaginertia="0.034757 0.0335098 0.0199832"/>
+
+        <!-- UR convention: joint1 axis Z -->
+        <joint name="shoulder_pan_joint" axis="0 0 1" range="-6.28319 6.28319"/>
+
+        <geom type="mesh" mesh="shoulder" material="visualgeom" class="visual"/>
+
+        <body name="upper_arm_link" quat="0.707107 0.707107 0 0">
+          <inertial pos="-0.2476 0 0.2103"
+                   quat="0.0126173 0.701296 0.0125722 0.712647"
+                   mass="28.542" diaginertia="0.476467 0.475579 0.0278444"/>
+
+          <!-- UR convention: joint2 axis Y -->
+          <joint name="shoulder_lift_joint" axis="0 1 0" range="-6.28319 6.28319"/>
+
+          <geom type="mesh" mesh="upperarm" pos="0 0 0.26" quat="0.5 0.5 -0.5 -0.5"
+                material="visualgeom" class="visual"/>
+
+          <body name="forearm_link" pos="-0.637 0 0">
+            <inertial pos="-0.278 0 0.0629"
+                     quat="0.474576 0.524723 0.521214 0.477262"
+                     mass="7.156" diaginertia="0.1206 0.118095 0.00995448"/>
+
+            <!-- UR convention: joint3 axis Y -->
+            <joint name="elbow_joint" axis="0 1 0" range="-3.14159 3.14159"/>
+
+            <geom type="mesh" mesh="forearm" pos="0 0 0.043" quat="0.5 0.5 -0.5 -0.5"
+                  material="visualgeom" class="visual"/>
+
+            <body name="wrist_1_link" pos="-0.5037 0 0.201">
+              <inertial pos="0 -0.0353 -0.0048"
+                       quat="0.783712 0.621027 0.00575209 -0.00930279"
+                       mass="3.054" diaginertia="0.00609007 0.00598484 0.00225509"/>
+
+              <!-- UR convention: joint4 axis Y -->
+              <joint name="wrist_1_joint" axis="0 1 0" range="-6.28319 6.28319"/>
+
+              <geom type="mesh" mesh="wrist1" pos="0 0 -0.0775" quat="0.707107 0.707107 0 0"
+                    material="visualgeom" class="visual"/>
+
+              <body name="wrist_2_link" pos="0 -0.1593 -3.2673e-11" quat="0.707107 0.707107 0 0">
+                <inertial pos="0 0.0341 -0.0046"
+                         quat="0.601786 0.798584 0.00998004 -0.00423019"
+                         mass="3.126" diaginertia="0.00389011 0.003759 0.00206089"/>
+
+                <!-- UR convention: joint5 axis Z -->
+                <joint name="wrist_2_joint" axis="0 0 1" range="-6.28319 6.28319"/>
+
+                <geom type="mesh" mesh="wrist2" pos="0 0 -0.0749" quat="1 0 0 0"
+                      material="visualgeom" class="visual"/>
+
+                <body name="wrist_3_link" pos="0 0.1543 -3.16475e-11" quat="0.707107 -0.707107 0 0">
+                  <inertial pos="0 0 -0.0293"
+                           quat="0.707107 0 0 0.707107"
+                           mass="0.926" diaginertia="0.00118 0.00117 0.00084"/>
+
+                  <!-- UR convention: joint6 axis Y -->
+                  <joint name="wrist_3_joint" axis="0 1 0" range="-6.28319 6.28319"/>
+
+                  <geom type="mesh" mesh="wrist3" pos="0 0 -0.07" quat="0.707107 0.707107 0 0"
+                        material="visualgeom" class="visual"/>
+
+                  <!-- Optional: add an EE site like UR5e -->
+                  <site name="attachment_site" pos="0 0 0.1" quat="-1 1 0 0"/>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <!-- UR5e-style torque motors with explicit saturation -->
+  <actuator>
+    <motor name="shoulder_pan_motor"   joint="shoulder_pan_joint"   gear="1" ctrlrange="-738 738"/>
+    <motor name="shoulder_lift_motor"  joint="shoulder_lift_joint"  gear="1" ctrlrange="-738 738"/>
+    <motor name="elbow_motor"          joint="elbow_joint"          gear="1" ctrlrange="-433 433"/>
+    <motor name="wrist_1_motor"        joint="wrist_1_joint"        gear="1" ctrlrange="-107 107"/>
+    <motor name="wrist_2_motor"        joint="wrist_2_joint"        gear="1" ctrlrange="-107 107"/>
+    <motor name="wrist_3_motor"        joint="wrist_3_joint"        gear="1" ctrlrange="-107 107"/>
+  </actuator>
+
+  <keyframe>
+    <!-- Pick a sane “UR home-ish” pose (adjust if you want) -->
+    <key name="home"
+         qpos="-1.5708 -1.5708 1.5708 -1.5708 -1.5708 0"
+         ctrl="0 0 0 0 0 0"/>
+  </keyframe>
+</mujoco>
