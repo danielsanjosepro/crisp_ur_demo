@@ -1,3 +1,6 @@
+> [!WARN]
+> Consider using https://github.com/danielsanjosepro/pixi_ur_ros2.git instead as it simplifies a lot the installation pipeline.
+
 > [!NOTE]
 > ```bash
 > git clone https://github.com/danielsanjosepro/crisp_ur_demo.git
